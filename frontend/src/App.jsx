@@ -1,8 +1,12 @@
 import React from 'react'
+import RegisterLogin from './components/login_register/RegisterLogin'
+
 
 const App = () => {
   return (
-    <div className='text-2xl text-red-500 text-center'>App</div>
+    <div>
+      <RegisterLogin/>
+    </div>
   )
 }
 
