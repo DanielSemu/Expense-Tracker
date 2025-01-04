@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useContext  } from 'react';
 import axios from 'axios';
 import './register.css';
+import { AuthContext } from '../../context/AuthContext';
 
 const RegisterLogin = () => {
   const [toggleForm, setToggleForm] = useState(false);
@@ -11,6 +12,7 @@ const RegisterLogin = () => {
     email: "",
     password: "",
   });
+  const { loginUser } = useContext(AuthContext);
   const [error, setError] = useState("");
 
   // Handle input changes
@@ -21,16 +23,16 @@ const RegisterLogin = () => {
   // Handle form submission
   const handleSubmit = async (e, type) => {
     e.preventDefault();
-    
-    
     try {
-        console.log(type);
-      const url = type === "login" ? "http://127.0.0.1:8000/api/token/" : "http://127.0.0.1:8000/auth/register/";
-      const response = await axios.post(url, formData);
-
-      // Handle successful response
-      console.log(response.data);
-      alert(`Successfully ${type === "register" ? "registered" : "logged in"}!`);
+      if(type === 'login'){
+        const {username, password} = formData;
+        await loginUser(username, password)
+      }
+      if(type === 'register'){
+        const response = await loginUser(formData)
+        alert("registered")
+      }
+      
     } catch (error) {
       // Handle errors
       setError(error.response?.data?.message || "An error occurred");
