@@ -31,7 +31,7 @@ const RegisterLogin = () => {
         const {username, password} = formData;
         const token = await login(username, password);
         console.log(token);
-        
+
         setAccessToken(token);
         navigate('/dashboard');
       }

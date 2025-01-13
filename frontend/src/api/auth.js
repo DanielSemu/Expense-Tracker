@@ -2,13 +2,13 @@ import axiosInstance from "./axiosInstance";
 
 export const login = async (username,password)=>{
     const response= await axiosInstance.post('/api/token/',{username, password})
-    const {accessToken} =response.data
-    return accessToken
+    const {access} =response.data
+    return access
 }
 
 export const refreshToken = async ()=>{
     const response = await axiosInstance.post('/api/token/refresh/')
-    return response.data.accessToken
+    return response.data.access
 }
 
 export const logout =async ()=>{
