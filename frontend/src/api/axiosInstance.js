@@ -1,29 +1,40 @@
-import axios from "axios";
+import axios from 'axios'
+import { getAccessToken, setAccessToken } from './tokenStorage'
+import { refreshToken } from './auth';
+export const BASE_URL = 'http://localhost:8000';
 
-// Create an axios instance
+
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.REACT_APP_API_URL || 'http://localhost:8000', // Use environment variable or default to localhost
-  timeout: 5000,  // Timeout in case the request takes too long
-  headers: {
-    'Content-Type': 'application/json'  // Set the Content-Type header for JSON requests
-  },
-});
+    baseURL:BASE_URL,
+    withCredentials:true
+})
 
-// Intercept requests to add the Authorization header if a token exists
-axiosInstance.interceptors.request.use((config) => {
-  const token = JSON.parse(localStorage.getItem('authTokens'))?.access;
-  console.log('Token:', token);  // Check the token in the console
+axiosInstance.interceptors.request.use(config =>{
+    const token=getAccessToken()
+    if (token) {
+        config.headers.Authorization= `Bearer ${token}`
+    }
+    return config
+})
 
-  if (token) {
-    // Add the token to the Authorization header if available
-    config.headers['Authorization'] = `Bearer ${token}`;
-  } else {
-    console.warn('No token found!');  // Log a warning if no token exists
-  }
+axiosInstance.interceptors.response.use(
+    response=>response, 
+    async error =>{
+        const originalRequest= error.config
+        if (error.response?.status ===401 && !originalRequest._retry) {
+            originalRequest._retry=true
+            try {
+                const newAccessToken= await refreshToken()
+                setAccessToken(newAccessToken)
+                originalRequest.headers.Authorization=`Bearer${newAccessToken}`
+                return axiosInstance(originalRequest)
+            } catch (error) {
+                window.location.href='/login'
+            }
+        }
+        return Promise.reject(error)
+    }
+)
 
-  return config;  // Return the updated config
-}, (error) => {
-  return Promise.reject(error);  // Handle request errors
-});
-
-export default axiosInstance;
+export default axiosInstance

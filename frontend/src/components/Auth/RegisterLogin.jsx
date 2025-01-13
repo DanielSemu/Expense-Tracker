@@ -1,7 +1,9 @@
-import React, { useState,useContext  } from 'react';
-import axios from 'axios';
+import React, { useState  } from 'react';
 import './register.css';
-import { AuthContext } from '../../context/AuthContext';
+import { useAuthContext } from '../../context/AuthContext';
+import { login } from '../../api/auth';
+import { setAccessToken } from '../../api/tokenStorage';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterLogin = () => {
   const [toggleForm, setToggleForm] = useState(false);
@@ -12,7 +14,8 @@ const RegisterLogin = () => {
     email: "",
     password: "",
   });
-  const { loginUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
   const [error, setError] = useState("");
 
   // Handle input changes
@@ -26,7 +29,11 @@ const RegisterLogin = () => {
     try {
       if(type === 'login'){
         const {username, password} = formData;
-        await loginUser(username, password)
+        const token = await login(username, password);
+        console.log(token);
+        
+        setAccessToken(token);
+        navigate('/dashboard');
       }
       if(type === 'register'){
         const response = await loginUser(formData)
