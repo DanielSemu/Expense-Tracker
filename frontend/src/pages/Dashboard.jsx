@@ -3,9 +3,13 @@ import { useAuthContext } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { user} = useAuthContext();
+  console.log(user); 
   return (
     <div>
-      <h1>Welcome, {user ? user.username : 'User'}!</h1>
+
+      <h1>Welcome, {user || 'User'}!</h1>
+
+
       {/* <button onClick={''}>Logout</button> */}
     </div>
   );

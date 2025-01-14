@@ -15,7 +15,7 @@ const RegisterLogin = () => {
     password: "",
   });
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const { user,setUser } = useAuthContext();
   const [error, setError] = useState("");
 
   // Handle input changes
@@ -30,8 +30,7 @@ const RegisterLogin = () => {
       if(type === 'login'){
         const {username, password} = formData;
         const token = await login(username, password);
-        console.log(token);
-
+        await setUser(username)        
         setAccessToken(token);
         navigate('/dashboard');
       }

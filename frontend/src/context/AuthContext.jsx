@@ -6,15 +6,15 @@ import { refreshToken } from "../api/auth";
 const AuthContext=createContext()
 
 export const AuthProvider =({children})=>{
-    const [user, setUser]=useState(null)
+    const [user, setUser]=useState('')
     useEffect(()=>{
         const initializeAuth = async ()=>{
             try {
-                const token= await refreshToken()
-                setAccessToken(token)
-                setUser({})
+                const response= await refreshToken()
+                setAccessToken(response.data.access)
+                setUser(response.data.username)
             } catch (error) {
-                setUser(null)
+                setUser('')
             }
         } 
 
