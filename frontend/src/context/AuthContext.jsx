@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-              
+              alert("")
                 // Make an API call to check if the user is authenticated
                 const response = await axiosInstance.get('/auth/profile'); // Assume backend provides this endpoint
                 console.log(response);
