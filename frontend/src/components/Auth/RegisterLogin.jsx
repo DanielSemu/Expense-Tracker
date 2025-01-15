@@ -1,9 +1,10 @@
 import React, { useState  } from 'react';
 import './register.css';
-import { useAuthContext } from '../../context/AuthContext';
 import { login } from '../../api/auth';
 import { setAccessToken } from '../../api/tokenStorage';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
+
 
 const RegisterLogin = () => {
   const [toggleForm, setToggleForm] = useState(false);
@@ -15,7 +16,7 @@ const RegisterLogin = () => {
     password: "",
   });
   const navigate = useNavigate();
-  const { user,setUser } = useAuthContext();
+  const { user,setUser } = useAuth()
   const [error, setError] = useState("");
 
   // Handle input changes

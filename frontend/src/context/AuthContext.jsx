@@ -1,26 +1,39 @@
-import { createContext,useContext,useState,useEffect } from "react";
+import { createContext, useState, useEffect } from 'react';
+import axiosInstance from '../api/axiosInstance';
 
-import { getAccessToken,setAccessToken } from "../api/tokenStorage";
-import { refreshToken } from "../api/auth";
+export const AuthContext = createContext();
 
-const AuthContext=createContext()
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState('');
+    const [loading, setLoading] = useState(true);  // Add loading state to handle async behavior
 
-export const AuthProvider =({children})=>{
-    const [user, setUser]=useState('')
-    useEffect(()=>{
-        const initializeAuth = async ()=>{
+    useEffect(() => {
+        const initializeAuth = async () => {
             try {
-                const response= await refreshToken()
-                setAccessToken(response.data.access)
-                setUser(response.data.username)
+              
+                // Make an API call to check if the user is authenticated
+                const response = await axiosInstance.get('/auth/profile'); // Assume backend provides this endpoint
+                console.log(response);
+                
+                setUser(response.data.username);
             } catch (error) {
-                setUser('')
+                setUser('');
+            } finally {
+                setLoading(false); // Set loading to false when check is done
             }
-        } 
+        };
 
-        initializeAuth()
-    },[])
-    return <AuthContext.Provider value={{user,setUser}}>{children}</AuthContext.Provider>
-}
+        initializeAuth();
+    }, []);
 
-export const useAuthContext = ()=>useContext(AuthContext)
+    // Handle loading state while checking authentication
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <AuthContext.Provider value={{ setLoading,user, setUser }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};

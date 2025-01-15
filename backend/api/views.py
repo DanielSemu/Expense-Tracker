@@ -58,7 +58,6 @@ class CustomTokenRefreshView(TokenRefreshView):
 class UserProfileView(APIView):
     permission_classes=[IsAuthenticated]
     
-    
     def get(self,request):
         user=request.user
         return Response({

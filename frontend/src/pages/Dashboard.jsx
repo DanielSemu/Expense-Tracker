@@ -1,16 +1,10 @@
-import { useAuthContext } from '../context/AuthContext';
-
+import useAuth from "../hooks/useAuth";
 
 const Dashboard = () => {
-  const { user} = useAuthContext();
-  console.log(user); 
+  const { user} = useAuth();
   return (
     <div>
-
       <h1>Welcome, {user || 'User'}!</h1>
-
-
-      {/* <button onClick={''}>Logout</button> */}
     </div>
   );
 };
