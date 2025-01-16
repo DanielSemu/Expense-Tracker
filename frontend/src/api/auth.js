@@ -46,5 +46,6 @@ export const refreshToken = async () => {
 
 
 export const logout =async ()=>{
-    await axiosInstance.post('/logout')
+    const response=await axiosInstance.post('/auth/logout/')
+    console.log(response);
 }
