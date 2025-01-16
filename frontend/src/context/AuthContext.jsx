@@ -1,41 +1,36 @@
 import { createContext, useState, useEffect } from 'react';
-import axiosInstance, { refreshAxiosInstance } from '../api/axiosInstance';
+import axiosInstance, { BASE_URL, refreshAxiosInstance } from '../api/axiosInstance';
 import { getAccessToken, setAccessToken } from '../api/tokenStorage';
-
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState('');
-    const accessToken=getAccessToken()
-    const [loading, setLoading] = useState(true);  // Add loading state to handle async behavior
+    const [accessToken, setLocalAccessToken] = useState(getAccessToken());  // Manage access token as state
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const initializeAuth = async () => {
+            setLoading(true);
             try {
-              
-                // Make an API call to check if the user is authenticated
-                const response = await axiosInstance.post('/auth/token/refresh/'); // Assume backend provides this endpoint
-                
+                const response = await axios.post(`${BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
                 setAccessToken(response.data.access);
-                setLoading(false);
+                setLocalAccessToken(response.data.access);
             } catch (error) {
                 console.log(error);
-                alert('')
                 setAccessToken('');
-                setLoading(false);
+                setLocalAccessToken('');
             } finally {
-                setLoading(false); // Set loading to false when check is done
+                setLoading(false);
             }
         };
 
         initializeAuth();
-    }, [accessToken]);
+    }, []);  // Remove accessToken from dependencies
 
-    // Handle loading state while checking authentication
-   
     return (
-        <AuthContext.Provider value={{ loading,setLoading,user, setUser }}>
+        <AuthContext.Provider value={{ loading, user, setUser }}>
             {children}
         </AuthContext.Provider>
     );

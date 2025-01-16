@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import { setAccessToken } from './tokenStorage';
+import {  setAccessToken } from './tokenStorage';
 
 
 let isRefreshing = false;
@@ -11,6 +11,11 @@ export const login = async (username, password) => {
     const { access } = response.data;  // Destructure access token from the response
     setAccessToken(access);  // Save token locally
     return access;
+};
+export const profile = async () => {
+    const response = await axiosInstance.get('/auth/profile/');
+
+    return response.data;
 };
 
 export const refreshToken = async () => {

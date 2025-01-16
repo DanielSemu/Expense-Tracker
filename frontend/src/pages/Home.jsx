@@ -1,9 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { profile } from '../api/auth';  // Assuming this is an API call to fetch the profile
 
 const Home = () => {
-  return (
-    <div>Home</div>
-  )
-}
+  const [userProfile, setUserProfile] = useState(null);  // Use userProfile as a more descriptive state name
 
-export default Home
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await profile();  // Fetch profile data
+        setUserProfile(res);  // Set the profile data to state
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  return (
+    <div>
+      <h1>Home Page</h1>
+      {userProfile ? (
+        <p>{userProfile.username}</p>  // Access profile data when available
+      ) : (
+        <p>Loading...</p>
+      )}
+      <Link to="/dashboard">Dashboard</Link>
+    </div>
+  );
+};
+
+export default Home;

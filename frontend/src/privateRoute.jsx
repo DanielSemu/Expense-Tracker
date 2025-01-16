@@ -5,10 +5,7 @@ import { getAccessToken } from './api/tokenStorage';
 const PrivateRoute = ({ children }) => {
     const {loading,setLoading}=useAuth()
     const  accessToken  = getAccessToken();  
-    console.log(loading);
-    console.log(accessToken);
-    
-    
+
     
     if (loading && !accessToken) {
         return <div>Loading...</div>;
