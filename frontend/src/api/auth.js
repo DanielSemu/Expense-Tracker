@@ -13,7 +13,6 @@ export const login = async (username, password) => {
     return access;
 };
 
-// Token refresh logic
 export const refreshToken = async () => {
     if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -21,26 +20,25 @@ export const refreshToken = async () => {
         });
     }
 
+    isRefreshing = true;
     try {
-        isRefreshing = true;
-        const response = await axiosInstance.post('/auth/token/refresh/');
-        const newAccessToken = response.data.access;  // Get new access token from the response
-        setAccessToken(newAccessToken);  // Save new access token
+        const response = await axios.post(`${BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
+        const newAccessToken = response.data.access;
+        setAccessToken(newAccessToken);
 
-        // Resolve all queued requests
         refreshSubscribers.forEach(({ resolve }) => resolve(newAccessToken));
-        refreshSubscribers = [];  // Clear the queue
+        refreshSubscribers = [];
 
-        return newAccessToken;  // Return new access token
+        return newAccessToken;
     } catch (error) {
-        // Handle error (e.g., token refresh failed)
         refreshSubscribers.forEach(({ reject }) => reject(error));
         refreshSubscribers = [];
-        throw error;  // Propagate error
+        throw error;
     } finally {
-        isRefreshing = false;  // Reset the refresh flag
+        isRefreshing = false;
     }
 };
+
 
 export const logout =async ()=>{
     await axiosInstance.post('/logout')
