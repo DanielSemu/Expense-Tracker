@@ -1,13 +1,12 @@
 import { createContext, useState, useEffect } from 'react';
-import axiosInstance, { BASE_URL, refreshAxiosInstance } from '../api/axiosInstance';
-import { getAccessToken, setAccessToken } from '../api/tokenStorage';
+import  { BASE_URL} from '../api/axiosInstance';
+import { setAccessToken } from '../api/tokenStorage';
 import axios from 'axios';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState('');
-    const [accessToken, setLocalAccessToken] = useState(getAccessToken());  // Manage access token as state
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,11 +15,10 @@ export const AuthProvider = ({ children }) => {
             try {
                 const response = await axios.post(`${BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
                 setAccessToken(response.data.access);
-                setLocalAccessToken(response.data.access);
             } catch (error) {
                 console.log(error);
                 setAccessToken('');
-                setLocalAccessToken('');
+                setLoading(false);
             } finally {
                 setLoading(false);
             }
