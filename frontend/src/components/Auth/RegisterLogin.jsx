@@ -31,7 +31,7 @@ const RegisterLogin = () => {
             const { username, password } = formData;
             const token = await login(username, password);        
             setAccessToken(token);
-            navigate('/dashboard');
+            navigate('/');
         }
         if (type === 'register') {
             const response = await registerUser(formData);

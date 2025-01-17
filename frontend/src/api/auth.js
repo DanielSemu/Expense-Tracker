@@ -46,7 +46,6 @@ export const login = async (username, password) => {
 };
 export const profile = async () => {
     const response = await axiosInstance.get('/auth/profile/');
-
     return response.data;
 };
 

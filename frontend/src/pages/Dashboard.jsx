@@ -7,7 +7,7 @@ const Dashboard = () => {
   const { user,} = useAuth();
   const handleLogout =async()=>{
       await logout()
-      navigate('/')
+      navigate('/login')
   } 
   return (
     <div>

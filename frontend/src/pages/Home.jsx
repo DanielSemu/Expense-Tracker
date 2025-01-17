@@ -18,14 +18,14 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
+    <div className='section'>
       <h1>Home Page</h1>
       {userProfile ? (
         <p>{userProfile.username}</p>  // Access profile data when available
       ) : (
         <p>Loading...</p>
       )}
-      <Link to="/dashboard">Dashboard</Link>
+      <Link to="/">Dashboard</Link>
     </div>
   );
 };
