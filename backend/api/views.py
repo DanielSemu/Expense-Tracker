@@ -1,15 +1,13 @@
-from django.shortcuts import render
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated,AllowAny
-from rest_framework import status
-from django.contrib.auth.models import User
-from rest_framework.exceptions import ValidationError
-from django.contrib.auth.hashers import make_password
-
-from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import render # type: ignore
+from rest_framework.views import APIView # type: ignore
+from rest_framework.response import Response # type: ignore
+from rest_framework.permissions import IsAuthenticated,AllowAny # type: ignore
+from rest_framework import status # type: ignore
+from django.contrib.auth.models import User # type: ignore
+from rest_framework.exceptions import ValidationError # type: ignore
+from django.contrib.auth.hashers import make_password # type: ignore
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView # type: ignore
+from rest_framework_simplejwt.tokens import RefreshToken # type: ignore
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -28,10 +26,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             del token_data['refresh']
         return response
     
-from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.models import User
 
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
@@ -67,34 +61,48 @@ class UserProfileView(APIView):
             'last name':user.last_name
         })
 class RegisterUserView(APIView):
-    permission_classes=[AllowAny]
+    permission_classes = [AllowAny]
     
-    def post(self,request, *args , **kwargs):
-        data=request.data
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        
         # Validate required fields
         username = data.get('username')
         email = data.get('email')
         password = data.get('password')
+        print(username)  # Debugging info
         
-        
+        # Check if required fields are missing
         if not username or not email or not password:
-            raise ValidationError("Username, email and password are required fields.")
+            return Response(
+                {"error": "Username, email, and password are required fields."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if username already exists
         if User.objects.filter(username=username).exists():
-            raise ValidationError("This user with this Username is already Registered")
+            return Response(
+                {"error": "A user with this username is already registered."},
+                status=status.HTTP_409_CONFLICT
+            )
+        
+        # Check if email already exists
         if User.objects.filter(email=email).exists():
-            raise ValidationError("User with this email is already registered!")
+            return Response(
+                {"error": "A user with this email is already registered."},
+                status=status.HTTP_409_CONFLICT
+            )
         
-        
-        # create User
-        user=User.objects.create(
+        # Create user
+        user = User.objects.create(
             username=username,
             email=email,
             password=make_password(password),
             first_name=data.get('first_name'),
             last_name=data.get('last_name')
-            
         )
-         # Return a success response
+        
+        # Return a success response
         return Response(
             {
                 "message": "User registered successfully.",
@@ -104,9 +112,8 @@ class RegisterUserView(APIView):
                     "email": user.email,
                 },
             },
-            status=status.HTTP_201_CREATED,
+            status=status.HTTP_201_CREATED
         )
-        
         
 # class LogoutView(APIView):
 #     permission_classes=[IsAuthenticated]

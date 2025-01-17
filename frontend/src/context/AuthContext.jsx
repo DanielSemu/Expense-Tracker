@@ -6,7 +6,6 @@ import axios from 'axios';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,7 +15,6 @@ export const AuthProvider = ({ children }) => {
                 const response = await axios.post(`${BASE_URL}/auth/token/refresh/`, {}, { withCredentials: true });
                 setAccessToken(response.data.access);
             } catch (error) {
-                console.log(error);
                 setAccessToken('');
                 setLoading(false);
             } finally {
@@ -25,10 +23,9 @@ export const AuthProvider = ({ children }) => {
         };
 
         initializeAuth();
-    }, []);  // Remove accessToken from dependencies
-
+    }, []);  
     return (
-        <AuthContext.Provider value={{ loading, user, setUser }}>
+        <AuthContext.Provider value={{ loading }}>
             {children}
         </AuthContext.Provider>
     );

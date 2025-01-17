@@ -1,6 +1,6 @@
 import React, { useState  } from 'react';
 import './register.css';
-import { login } from '../../api/auth';
+import { login, registerUser } from '../../api/auth';
 import { setAccessToken } from '../../api/tokenStorage';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
@@ -16,7 +16,6 @@ const RegisterLogin = () => {
     password: "",
   });
   const navigate = useNavigate();
-  const { user,setUser } = useAuth()
   const [error, setError] = useState("");
 
   // Handle input changes
@@ -28,23 +27,29 @@ const RegisterLogin = () => {
   const handleSubmit = async (e, type) => {
     e.preventDefault();
     try {
-      if(type === 'login'){
-        const {username, password} = formData;
-        const token = await login(username, password);
-        await setUser(username)        
-        setAccessToken(token);
-        navigate('/dashboard');
-      }
-      if(type === 'register'){
-        const response = await loginUser(formData)
-        alert("registered")
-      }
-      
+        if (type === 'login') {
+            const { username, password } = formData;
+            const token = await login(username, password);        
+            setAccessToken(token);
+            navigate('/dashboard');
+        }
+        if (type === 'register') {
+            const response = await registerUser(formData);
+            if (response.success === false) {
+                alert(`Registration failed: ${response.message}`);
+            } else {
+                alert("Registration successful");
+                // Optionally navigate to another page or reset form here
+            }
+        }
     } catch (error) {
-      // Handle errors
-      setError(error.response?.data?.message || "An error occurred");
+        // Fallback error handling if needed
+        const message = error.response?.data?.message || "An unexpected error occurred";
+        setError(message);
+        alert(message);  // Show error message as a fallback
     }
-  };
+};
+
 
 
   return (
