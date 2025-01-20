@@ -8,44 +8,56 @@ from rest_framework.exceptions import ValidationError # type: ignore
 from django.contrib.auth.hashers import make_password # type: ignore
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView # type: ignore
 from rest_framework_simplejwt.tokens import RefreshToken # type: ignore
-
+from rest_framework.exceptions import AuthenticationFailed
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    def post(self,request,*args, **kwargs):
-        response=super().post(request,*args, **kwargs)
-        token_data=response.data
+    def post(self, request, *args, **kwargs):
+        try:
+            response = super().post(request, *args, **kwargs)
+            token_data = response.data
 
-        if 'access' in token_data and 'refresh' in token_data:
-            response.set_cookie(
-                key='refresh_token',
-                value=token_data['refresh'],
-                httponly=True,
-                # secure=True,
-                # samesite='Lax'
+            if 'access' in token_data and 'refresh' in token_data:
+                response.set_cookie(
+                    key='refresh_token',
+                    value=token_data['refresh'],
+                    httponly=True,
+                    # secure=True, # Uncomment in production
+                    # samesite='Lax'
+                )
+                del token_data['refresh']
+            return response
+        except AuthenticationFailed as e:
+            # Specific message for authentication failure
+            return Response(
+                {'detail': 'Invalid username or password.'},
+                status=status.HTTP_401_UNAUTHORIZED
             )
-            del token_data['refresh']
-        return response
-    
+        except Exception as e:
+            # General error handler for other exceptions
+            return Response(
+                {'detail': 'An error occurred during login. Please try again.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-        # Get the refresh token from cookies
+        # Extract the refresh token from cookies
         refresh_token = request.COOKIES.get('refresh_token')
-        if refresh_token:
-            request.data['refresh'] = refresh_token
+        if not refresh_token:
+            return Response({'error': 'No refresh token found'}, status=400)
+        
+        # Inject the refresh token into the request data
+        request.data['refresh'] = refresh_token
 
-        # Call the parent class's post method to refresh the token
+        # Call the parent method to refresh the access token
         response = super().post(request, *args, **kwargs)
         
-        # Decode the refresh token to get user information
-        try:
-            token = RefreshToken(refresh_token)
-            user_id = token['user_id']
-            user = User.objects.get(id=user_id)
-            response.data['username'] = user.username
-        except Exception as e:
-            response.data['error'] = 'Could not retrieve user information'
-
+        # Only send the new access token without user information
+        if response.status_code == 200:
+            return Response({
+                'access': response.data['access']
+            })
+        
         return response
 
 
@@ -104,7 +116,8 @@ class RegisterUserView(APIView):
         
         # Return a success response
         return Response(
-            {
+            {   
+                "success":True,
                 "message": "User registered successfully.",
                 "user": {
                     "id": user.id,
@@ -133,5 +146,6 @@ class LogoutView(APIView):
         
         # Clear the refresh token cookie if used
         response.delete_cookie('refresh_token')
+        
         
         return response

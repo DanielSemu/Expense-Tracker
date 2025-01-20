@@ -14,6 +14,10 @@ const axiosInstance = axios.create({
     baseURL: BASE_URL,
     withCredentials: true, // Ensures cookies are sent with each request
 });
+export const loginAxiosInstance = axios.create({
+    baseURL: BASE_URL,
+    withCredentials: true, // Ensures cookies are sent with each request
+});
 
 // Request interceptor to include the access token in headers
 axiosInstance.interceptors.request.use(
@@ -44,6 +48,7 @@ axiosInstance.interceptors.response.use(
                 }
             } catch (refreshError) {
                 console.error('Token refresh failed:', refreshError);
+                alert("sfds")
                 window.location.href = '/login'; // Redirect to login page
             }
         }

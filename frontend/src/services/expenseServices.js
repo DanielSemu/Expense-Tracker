@@ -5,7 +5,6 @@ import axiosInstance from "../api/axiosInstance";
 export const getExpenses = async ()=>{
     try {
         const response=await axiosInstance.get('/api/expenses/')
-        console.log(response);
         return response.data    
     } catch (error) {
         console.error("error while fetching",error)
