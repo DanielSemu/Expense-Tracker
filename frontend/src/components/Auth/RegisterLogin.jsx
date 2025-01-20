@@ -1,9 +1,9 @@
 import React, { useState  } from 'react';
 import './register.css';
 import { login, registerUser } from '../../api/auth';
-import { setAccessToken } from '../../api/tokenStorage';
 import { useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';
+import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
+import { setAccessToken } from '../../api/tokenStorage';
 
 
 const RegisterLogin = () => {
@@ -25,28 +25,36 @@ const RegisterLogin = () => {
 
   // Handle form submission
   const handleSubmit = async (e, type) => {
-    e.preventDefault();
+    e.preventDefault();  // Prevent page reload
     try {
-        if (type === 'login') {
-            const { username, password } = formData;
-            const token = await login(username, password);        
-            setAccessToken(token);
-            navigate('/');
+      if (type === 'login') {
+        const { username, password } = formData;
+        const response = await login(username, password);
+        
+        
+        if (response.status === 200 || response.statusText === "Ok"){
+          setAccessToken(response.data.access)
+          navigate('/');
         }
-        if (type === 'register') {
+        else if(response.status === 401 || response.statusText === "Unauthorized"){
+          showErrorToast(response.data.detail)
+        }
+        else{
+          showErrorToast("Unexpected Error Occurred!")
+        }
+        
+    }
+     else if (type === 'register') {
             const response = await registerUser(formData);
-            if (response.success === false) {
-                alert(`Registration failed: ${response.message}`);
+            if (!response.success) {
+                showErrorToast(`Registration failed: ${response.message}`);
             } else {
-                alert("Registration successful");
-                // Optionally navigate to another page or reset form here
+                showSuccessToast("Registration successful")
             }
         }
     } catch (error) {
-        // Fallback error handling if needed
         const message = error.response?.data?.message || "An unexpected error occurred";
-        setError(message);
-        alert(message);  // Show error message as a fallback
+        showErrorToast(message);  // Fallback error notification
     }
 };
 
@@ -65,6 +73,7 @@ const RegisterLogin = () => {
             placeholder="First Name"
             value={formData.first_name}
             onChange={handleChange}
+            required
           />
           <input
             type="text"
@@ -72,6 +81,7 @@ const RegisterLogin = () => {
             placeholder="Last Name"
             value={formData.last_name}
             onChange={handleChange}
+            required
           />
           <input
             type="username"
@@ -79,6 +89,7 @@ const RegisterLogin = () => {
             placeholder="Username"
             value={formData.username}
             onChange={handleChange}
+            required
           />
           <input
             type="email"
@@ -86,6 +97,7 @@ const RegisterLogin = () => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
+            required
           />
           <input
             type="password"
@@ -93,12 +105,13 @@ const RegisterLogin = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            required
           />
           <button type='submit'>Sign Up</button>
         </form>
       </div>
       <div className="custom-form-container custom-sign-in">
-        <form onSubmit={(e) => handleSubmit(e, "login")}>
+        <form onSubmit={(e) => handleSubmit(e, 'login')}>
           <h1>Sign In</h1>
           <span>or use your email password</span>
           <input
@@ -107,6 +120,7 @@ const RegisterLogin = () => {
             placeholder="Username"
             value={formData.username}
             onChange={handleChange}
+            required
           />
           <input
             type="password"
@@ -114,6 +128,7 @@ const RegisterLogin = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            required
           />
           <a href="#">Forget Your Password?</a>
           <button type='submit'>Sign In</button>

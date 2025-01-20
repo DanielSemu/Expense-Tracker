@@ -113,6 +113,9 @@ useEffect(() => {
             <Link  to="/incomes" className="navbar-link">Incomes</Link>
             </li>
             <li>
+            <Link  to="/budget" className="navbar-link">Budget</Link>
+            </li>
+            <li>
             <Link  to="/categories" className="navbar-link">Categories</Link>
             </li>
             <li className="navbar-link ">

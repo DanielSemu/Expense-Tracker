@@ -1,5 +1,5 @@
 import axios from 'axios';
-import axiosInstance, { BASE_URL } from './axiosInstance';
+import axiosInstance, { BASE_URL, loginAxiosInstance } from './axiosInstance';
 import {  setAccessToken } from './tokenStorage';
 
 
@@ -37,13 +37,24 @@ export const registerUser = async (formData) => {
     }
 };
 
-// Login function: Handles user login and sets the access token in storage
 export const login = async (username, password) => {
-    const response = await axiosInstance.post('/auth/token/', { username, password });
-    const { access } = response.data;  // Destructure access token from the response
-    setAccessToken(access);  // Save token locally
-    return access;
+    try {
+        
+        const response = await axios.post(
+            `${BASE_URL}/auth/token/`, 
+            { username, password }, 
+            {
+                withCredentials: true, // Ensures cookies are sent with the request
+            }
+        );
+        const { access } = response.data;  // Destructure access token from the response
+        setAccessToken(access)
+        return response;  
+    } catch (error) {
+        return error.response
+    }
 };
+
 export const profile = async () => {
     const response = await axiosInstance.get('/auth/profile/');
     return response.data;
@@ -78,6 +89,7 @@ export const refreshToken = async () => {
 
 export const logout =async ()=>{
     const response=await axiosInstance.post('/auth/logout/')
-    setAccessToken
+    
+    setAccessToken(null)
     return response
 }
