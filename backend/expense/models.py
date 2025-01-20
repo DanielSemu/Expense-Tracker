@@ -1,5 +1,5 @@
 from django.db import models  # Remove the second import
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User 
 
 class Category(models.Model):
     CATEGORY_TYPE_CHOICES = [
@@ -31,17 +31,17 @@ class Category(models.Model):
 class Expense(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE)
     category=models.ForeignKey(Category, on_delete=models.CASCADE) #expense Category
+    expense=models.CharField(max_length=255, null=False, blank=False)
     amount=models.DecimalField(max_digits=10, decimal_places=2)
-    description=models.TextField(max_length=255, null=True, blank=True)
     date=models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"{self.amount} - {self.category.name} ({self.date})"
+        return f"{self.expense} {self.amount} - {self.category.name} "
     
 class Income(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
-    amount=models.DecimalField(max_digits=10,decimal_places=2)
     source=models.ForeignKey(Category,on_delete=models.CASCADE) #income Category
+    amount=models.DecimalField(max_digits=10,decimal_places=2)
     description=models.TextField(max_length=255,null=True, blank=True)
     date=models.DateTimeField(auto_now_add=True)
     
@@ -91,3 +91,5 @@ class Settings(models.Model):
 
     def __str__(self):
         return f"Settings for {self.user.username}"
+
+
