@@ -107,11 +107,14 @@ useEffect(() => {
               <Link  to="/home" className="navbar-link">Home</Link>
             </li>
             <li>
+            <Link  to="/transactions" className="navbar-link">Transactions</Link>
+            </li>
+            {/* <li>
             <Link  to="/expenses" className="navbar-link">Expenses</Link>
             </li>
             <li>
             <Link  to="/incomes" className="navbar-link">Incomes</Link>
-            </li>
+            </li> */}
             <li>
             <Link  to="/budget" className="navbar-link">Budget</Link>
             </li>

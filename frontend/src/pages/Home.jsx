@@ -18,7 +18,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='section'>
+    <div className='section container'>
       <h1>Home Page</h1>
       {userProfile ? (
         <p>{userProfile.username}</p>  // Access profile data when available
