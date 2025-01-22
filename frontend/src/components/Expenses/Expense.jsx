@@ -37,13 +37,13 @@ const Expense = () => {
     ];
   
   return (
-    <div className='section container'>
+    <div className='container'>
       {expenses &&(
         <ReusableTable
         columns={columns}
         records={expenses}
-        addAddress={"/supplier/add"}
-        title={"Supplier"}
+        addAddress={"/expenses/add"}
+        title={"Expense"}
       />
       )}
       

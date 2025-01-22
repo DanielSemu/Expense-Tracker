@@ -40,7 +40,7 @@ const Categories = () => {
     
 
   return (
-    <div className="section container">
+    <div className="container">
       {categories &&(
         <ReusableTable
         columns={columns}

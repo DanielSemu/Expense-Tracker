@@ -116,14 +116,14 @@
   
   html {
     font-family: var(--ff-poppins);
-    font-size: 10px;
+    /* font-size: 10px; */
     scroll-behavior: smooth;
   }
   
   body {
     background-color: var(--white);
     color: var(--granite-gray);
-    font-size: 1.6rem;
+    /* font-size: 1.6rem; */
     line-height: 1.6;
   }
   

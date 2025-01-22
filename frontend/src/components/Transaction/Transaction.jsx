@@ -20,11 +20,10 @@ const Transaction = () => {
     }, []);
   
     const columns = [
-          { header: "Description", accessor: "description" },
+          { header: "Transaction", accessor: "name" },
           { header: "Amount", accessor: "amount" },
           { header: "Date", accessor: "date" },
           { header: "Category", accessor: "category" },
-          { header: "Transaction Type", accessor: "type" },
           {
             header: "Manage",
             accessor: "actions",
@@ -49,7 +48,7 @@ const Transaction = () => {
           <ReusableTable
           columns={columns}
           records={transaction}
-          addAddress={"/transaction/add"}
+          // addAddress={"/transaction/add"}
           title={"Transaction"}
         />
         )}

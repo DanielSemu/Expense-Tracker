@@ -5,16 +5,17 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {
-      fontSize: {
-        sm: '0.875rem',
-        base: '1rem',
-      },
-    },
+    extend: {},
+    // extend: {
+    //   fontSize: {
+    //     sm: '0.875rem',
+    //     base: '1rem',
+    //   },
+    // },
   },
-  corePlugins: {
-    preflight: false, // Disables Tailwind's base resets entirely
-  },
+  // corePlugins: {
+  //   preflight: false, // Disables Tailwind's base resets entirely
+  // },
   plugins: [],
 }
 
