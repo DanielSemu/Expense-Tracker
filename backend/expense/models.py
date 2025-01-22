@@ -27,27 +27,58 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
-
 class Expense(models.Model):
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    category=models.ForeignKey(Category, on_delete=models.CASCADE) #expense Category
-    expense=models.CharField(max_length=255, null=False, blank=False)
-    amount=models.DecimalField(max_digits=10, decimal_places=2)
-    date=models.DateTimeField(auto_now_add=True)
-    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    expense = models.CharField(max_length=255, null=False, blank=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # expense Category
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(max_length=255, null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return f"{self.expense} {self.amount} - {self.category.name} "
-    
+        return f"{self.expense} {self.amount} - {self.category.name}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        Transaction.objects.create(
+            name=self.expense,
+            amount=self.amount,
+            date=self.date.date(),  # Extracting the date portion
+            category=self.category,
+            user=self.user
+        )
+
 class Income(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE)
-    source=models.ForeignKey(Category,on_delete=models.CASCADE) #income Category
-    amount=models.DecimalField(max_digits=10,decimal_places=2)
-    description=models.TextField(max_length=255,null=True, blank=True)
-    date=models.DateTimeField(auto_now_add=True)
-    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    source = models.CharField(max_length=100)  # income Category
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    description = models.TextField(max_length=255, null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return f"{self.amount} - {self.source.name} ({self.date})"
-    
+        return f"{self.amount} - {self.source} ({self.date})"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        Transaction.objects.create(
+            name=self.source,
+            amount=self.amount,
+            date=self.date.date(),  # Extracting the date portion
+            category=self.category,
+            user=self.user
+        )
+
+class Transaction(models.Model):
+    name = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name.title()} - {self.amount} - {self.category.name}"
+
 class Budget(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -56,23 +87,7 @@ class Budget(models.Model):
     end_date = models.DateTimeField()
 
     def __str__(self):
-        return f"Budget for {self.category.name} - {self.limit}"
-    
-class Transaction(models.Model):
-    TRANSACTION_TYPE=(
-        ('income','Income'),
-        ('expense','Expense'),
-    )    
-    amount=models.DecimalField(max_digits=10, decimal_places=2)
-    description=models.TextField()
-    date=models.DateField()
-    category=models.ForeignKey(Category,on_delete=models.CASCADE)
-    type=models.CharField(max_length=8, choices=TRANSACTION_TYPE)
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return f"{self.type.title()} - {self.amount} - {self.category.name}"
-    
+        return f"Budget for {self.category.name} - {self.limit}"    
 class RecurringExpense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)

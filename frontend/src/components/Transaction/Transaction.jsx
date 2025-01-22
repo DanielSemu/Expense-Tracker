@@ -44,7 +44,7 @@ const Transaction = () => {
       
   
     return (
-      <div className="section container">
+      <div className="container">
         {transaction &&(
           <ReusableTable
           columns={columns}
