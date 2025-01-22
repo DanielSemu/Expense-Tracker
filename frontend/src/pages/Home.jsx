@@ -21,7 +21,7 @@ const Home = () => {
     <div className='section'>
       <h1>Home Page</h1>
       {userProfile ? (
-        <p>{userProfile.username}</p>  // Access profile data when available
+        <p>{userProfile.username}</p>  
       ) : (
         <p>Loading...</p>
       )}
