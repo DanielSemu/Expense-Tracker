@@ -34,9 +34,10 @@ class BudgetSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
     class Meta:
         model = Transaction
-        fields = ['id', 'user', 'expense', 'income', 'date']
+        fields = '__all__'
         read_only_fields = ['user', 'date']
 
 

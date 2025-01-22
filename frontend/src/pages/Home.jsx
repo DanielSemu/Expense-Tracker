@@ -18,7 +18,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='section'>
+    <div className='text-center'>
       <h1>Home Page</h1>
       {userProfile ? (
         <p>{userProfile.username}</p>  

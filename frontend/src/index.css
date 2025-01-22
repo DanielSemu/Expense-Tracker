@@ -173,7 +173,7 @@
   
   .h4 { font-size: var(--fs-4); }
   
-  .btn {
+  /* .btn {
     background-color: var(--french-bistre);
     color: var(--white);
     display: flex;
@@ -187,7 +187,7 @@
   }
   
   .btn:is(:hover, :focus-visible) { background-color: var(--umber); }
-  
+   */
   .img-holder {
     aspect-ratio: var(--width) / var(--height);
     background-color: var(--granite-gray);
@@ -224,6 +224,10 @@
     background-size: cover;
   }
   
+  .actions{
+    display:  flex;
+    gap: 5px;
+  }
   
   
   
