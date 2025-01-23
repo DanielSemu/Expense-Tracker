@@ -1,8 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+const flowbite = require("flowbite-react/tailwind");
 export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    flowbite.content(),
   ],
   theme: {
     extend: {},
@@ -16,6 +18,8 @@ export default {
   // corePlugins: {
   //   preflight: false, // Disables Tailwind's base resets entirely
   // },
-  plugins: [],
+  plugins: [
+    flowbite.plugin(),
+  ],
 }
 

@@ -12,6 +12,16 @@ export const getExpenses = async ()=>{
     }
     
 }
+export const addExpense = async (formData)=>{
+    try {
+        const response=await axiosInstance.post('/api/expenses/ ',formData)
+        return response.data
+    } catch (error) {
+        console.error('submission Error', error)
+
+        throw error
+    }
+}
 
 // export const login = async (username, password)=>{
 //     try {

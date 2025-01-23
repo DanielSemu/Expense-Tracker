@@ -12,6 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
     class Meta:
         model = Expense
         fields = '__all__'  # Include all fields to be serialized
@@ -20,6 +21,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
 
 class IncomeSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
     class Meta:
         model = Income
         fields = ['id', 'user', 'amount', 'source', 'description', 'date']
