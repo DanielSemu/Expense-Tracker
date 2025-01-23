@@ -28,12 +28,9 @@ const Transaction = () => {
             header: "Manage",
             accessor: "actions",
             cell: (row) => (
-              <div className="actions">
+              <div className="action">
                 <button onClick={() => handleDetailStore(row)} className="btn">
                   <FiEye />
-                </button>
-                <button onClick={() => handleEditSupplier(row)} className="btn">
-                  <FiEdit />
                 </button>
                 
               </div>
