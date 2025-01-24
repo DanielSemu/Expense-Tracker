@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FaCalendar } from "react-icons/fa";
 import { getCategory } from "../../services/categoryServices";
 import { addExpense } from "../../services/expenseServices";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
