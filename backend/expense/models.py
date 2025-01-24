@@ -30,7 +30,7 @@ class Category(models.Model):
 class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     expense = models.CharField(max_length=255, null=False, blank=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # expense Category
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Expense category
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(max_length=255, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
@@ -39,14 +39,25 @@ class Expense(models.Model):
         return f"{self.expense} {self.amount} - {self.category.name}"
 
     def save(self, *args, **kwargs):
+        # Create or update a related Transaction
         super().save(*args, **kwargs)
-        Transaction.objects.create(
-            name=self.expense,
-            amount=self.amount,
-            date=self.date.date(),  # Extracting the date portion
-            category=self.category,
-            user=self.user
+        transaction, created = Transaction.objects.update_or_create(
+            expense=self,  # Link to the expense
+            defaults={
+                'name': self.expense,
+                'amount': self.amount,
+                'date': self.date.date(),
+                'category': self.category,
+                'user': self.user,
+            }
         )
+
+    def delete(self, *args, **kwargs):
+        # Delete the related Transaction when deleting an Expense
+        if hasattr(self, 'transaction'):
+            self.transaction.delete()
+        super().delete(*args, **kwargs)
+
 
 class Income(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -60,24 +71,51 @@ class Income(models.Model):
         return f"{self.amount} - {self.source} ({self.date})"
 
     def save(self, *args, **kwargs):
+        # Save the Income object
         super().save(*args, **kwargs)
-        Transaction.objects.create(
-            name=self.source,
-            amount=self.amount,
-            date=self.date.date(),  # Extracting the date portion
-            category=self.category,
-            user=self.user
+
+        # Create or update the related Transaction
+        transaction, created = Transaction.objects.update_or_create(
+            income=self,  # Correct link to income
+            defaults={
+                'name': self.source,
+                'amount': self.amount,
+                'date': self.date.date(),  # Use only the date portion
+                'category': self.category,
+                'user': self.user,
+            }
         )
 
+    def delete(self, *args, **kwargs):
+        # Delete the related Transaction when deleting Income
+        Transaction.objects.filter(income=self).delete()
+        super().delete(*args, **kwargs)
+
 class Transaction(models.Model):
-    name = models.CharField(max_length=100)
+    # Fields for linking with Expense and Income
+    expense = models.OneToOneField(
+        'expense.Expense', 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True
+    )
+    income = models.OneToOneField(
+        'Income', 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True
+    )
+    
+    # Other transaction details
+    name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.name.title()} - {self.amount} - {self.category.name}"
+        return f"{self.name} - {self.amount}"
+
 
 class Budget(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -3,7 +3,7 @@ from rest_framework.response import Response # type: ignore
 from rest_framework.permissions import IsAuthenticated,AllowAny # type: ignore
 from rest_framework import status # type: ignore
 from .serializers import CategorySerializer,ExpenseSerializer,IncomeSerializer, BudgetSerializer, TransactionSerializer, RecurringExpenseSerializer, SettingsSerializer
-
+from rest_framework.exceptions import NotFound
 
 from .models import Expense,Category,Income, Budget, Transaction, RecurringExpense, Settings
 
@@ -196,6 +196,15 @@ class TransactionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+        if transaction_id := kwargs.get('id'):
+            try:
+                transaction = Transaction.objects.get(id=transaction_id, user=request.user)
+            except Transaction.DoesNotExist as e:
+                raise NotFound("Transaction not found.") from e
+            serializer = TransactionSerializer(transaction)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # If 'id' is not provided, fetch all transactions for the user
         transactions = Transaction.objects.filter(user=request.user)
         serializer = TransactionSerializer(transactions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

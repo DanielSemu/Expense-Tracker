@@ -1,5 +1,4 @@
 import React, { useEffect,useState } from 'react'
-import { getExpenses } from '../../services/expenseServices'
 import ReusableTable from '../ui/ReusableTable'
 import { FiEye, FiEdit } from "react-icons/fi";
 import { getIncome } from '../../services/incomeServices';
@@ -10,9 +9,13 @@ const Income = () => {
     useEffect(()=>{
         const fetchExpenses= async()=>{
             const response=await getIncome()
-            console.log(response);
             
-            setIncomes(response)
+            const formattedExpenses = response.map((income) => {
+              const date = new Date(income.date); 
+              const formattedDate = date.toISOString().split('T')[0];
+              return { ...income, date: formattedDate };
+            });
+            setIncomes(formattedExpenses)
         }
         fetchExpenses()
     },[])

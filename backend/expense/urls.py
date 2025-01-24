@@ -9,5 +9,4 @@ urlpatterns = [
     path('incomes/<int:pk>/', IncomeView.as_view(), name='income-detail'),
     path('transaction/', TransactionView.as_view(), name='transaction-list-create'),
     path('transaction/<int:pk>/', TransactionView.as_view(), name='transaction-detail'),
-   
 ]
