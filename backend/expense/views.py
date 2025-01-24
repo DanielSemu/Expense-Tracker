@@ -107,17 +107,20 @@ class IncomeView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
-        category_id=request.data.get('category')
+        # Ensure category belongs to 'expense' type
+        category_id = request.data.get('category')
         try:
-            category=Category.objects.get(id=category_id,category_type='income')
-        except:
-            return Response({"error:Invalid For Income"}, status=status.HTTP_400_BAD_REQUEST)
+            category = Category.objects.get(id=category_id, category_type='income')
+        except Category.DoesNotExist:
+            return Response({"error": "Invalid category for income."}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer=IncomeSerializer(request.data)
+        # Validate and create the expense
+        serializer = IncomeSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user,category=category)
+            serializer.save(user=request.user, category=category)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     def put(self, request, *args, **kwargs):
         income_id=kwargs.get("pk")
         try:

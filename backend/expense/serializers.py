@@ -24,8 +24,8 @@ class IncomeSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
     class Meta:
         model = Income
-        fields = ['id', 'user', 'amount', 'source', 'description', 'date']
-        read_only_fields = ['user', 'date']
+        fields = '__all__'  # Include all fields to be serialized
+        read_only_fields = ['user', 'date']  # These fields are set automatically
 
 
 class BudgetSerializer(serializers.ModelSerializer):
