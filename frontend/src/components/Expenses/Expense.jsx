@@ -25,6 +25,7 @@ const Expense = () => {
         console.error("Error fetching categories:", error);
       }
     };
+    
     const fetchExpenses = async () => {
       const response = await getExpenses();
 
