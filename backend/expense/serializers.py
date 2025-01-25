@@ -23,10 +23,11 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
 
 class IncomeSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
+    category_name = serializers.CharField(source="category.name", read_only=True)
+    category_id = serializers.IntegerField(source="category.id", read_only=True)
     class Meta:
         model = Income
-        fields = '__all__'  # Include all fields to be serialized
+        fields = ['id', 'user', 'source', 'category_name', 'category_id', 'amount', 'description', 'date']
         read_only_fields = ['user', 'date']  # These fields are set automatically
 
 

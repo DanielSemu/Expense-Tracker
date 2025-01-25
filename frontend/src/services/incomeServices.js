@@ -21,3 +21,14 @@ export const addIncome = async (formData)=>{
         throw error
     }
 }
+
+export const editIncome = async (id,formData)=>{
+    try {
+        const response=await axiosInstance.put(`/api/incomes/${id}/`,formData)
+        return response.data
+    } catch (error) {
+        console.error('submission Error', error)
+
+        throw error
+    }
+}
