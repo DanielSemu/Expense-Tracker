@@ -41,7 +41,7 @@ const Expense = () => {
     };
     fetchCategories();
     fetchExpenses();
-  }, [expenses]);
+  }, []);
 
   const openDetailModal = (row) => {
     setSelectedExpense(row);
@@ -65,17 +65,21 @@ const Expense = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(name,value);
+    
     setFormData({ ...formData, [name]: value }); 
   };
 
   const handleFormSubmit = async () => {  
+    console.log(formData);
+    
     await editExpense(selectedExpense.id, formData);
     closeModal();
   };
 
   const columns = [
     { header: "Expense", accessor: "expense" },
-    { header: "Category", accessor: "category" },
+    { header: "Category", accessor: "category_name" },
     { header: "Amount", accessor: "amount" },
     { header: "Date", accessor: "date" },
     {
@@ -145,7 +149,7 @@ const Expense = () => {
                     </label>
                     <select
                       name="category"
-                      value={formData.category} // Use category.id
+                      value={formData.category_id} // Use category.id
                       onChange={handleInputChange}
                       className="w-full border rounded p-2"
                     >
@@ -194,7 +198,7 @@ const Expense = () => {
                     <strong>Expense:</strong> {selectedExpense.expense}
                   </p>
                   <p>
-                    <strong>Category:</strong> {selectedExpense.category}
+                    <strong>Category:</strong> {selectedExpense.category_name}
                   </p>
                   <p>
                     <strong>Amount:</strong> ${selectedExpense.amount}
