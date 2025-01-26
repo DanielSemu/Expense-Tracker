@@ -22,4 +22,15 @@ export const addCategory = async (formData)=>{
     }
 }
 
+export const editCategory = async (id,formData)=>{
+    try {
+        const response=await axiosInstance.put(`/api/category/${id}/`,formData)
+        return response.data
+    } catch (error) {
+        console.error('submission Error', error)
+
+        throw error
+    }
+}
+
 

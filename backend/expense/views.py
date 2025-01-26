@@ -122,21 +122,21 @@ class IncomeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def put(self, request, *args, **kwargs):
-        income_id=kwargs.get("pk")
+        income_id = kwargs.get('pk')
         try:
-            income=Income.objects.get(id=income_id,user=request.user )
-        except:
-            return Response({"error":"Income Not Found"}, status=status.HTTP_4004_NOT_FOUND)
+            income = Income.objects.get(id=income_id, user=request.user)
+        except Income.DoesNotExist:
+            return Response({"error": "Expense not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Ensure category belongs to 'income' type
+        # Ensure category belongs to 'expense' type
         category_id = request.data.get('category', income.category.id)
         try:
             category = Category.objects.get(id=category_id, category_type='income')
         except Category.DoesNotExist:
-            return Response({"error": "Invalid category for Income."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid category for income."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Validate and update the expense
-        serializer = ExpenseSerializer(income, data=request.data, partial=True)
+        serializer = IncomeSerializer(income, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save(category=category)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -149,9 +149,7 @@ class IncomeView(APIView):
             income.delete()
             return Response({"message": "Income deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
         except Income.DoesNotExist:
-            return Response({"error": "Expense not found."}, status=status.HTTP_404_NOT_FOUND)
-
-
+            return Response({"error": "Income not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
 class BudgetView(APIView):

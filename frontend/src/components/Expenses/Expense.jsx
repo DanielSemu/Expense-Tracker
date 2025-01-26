@@ -12,32 +12,32 @@ const Expense = () => {
   const [formData, setFormData] = useState({}); // Tracks the form data for editing
   const [categories, setCategories] = useState(null);
 
+  const fetchCategories = async () => {
+    try {
+      const res = await getCategory();
+
+      const response = res.filter(
+        (category) => category.category_type === "expense"
+      );
+      setCategories(response);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+  const fetchExpenses = async () => {
+    const response = await getExpenses();
+
+    const formattedExpenses = response.map((expense) => {
+      const date = new Date(expense.date);
+      const formattedDate = date.toISOString().split("T")[0];
+      // const categoryName=categories.filter((category)=>category.id === expense.category)
+
+      return { ...expense, date: formattedDate };
+    });
+
+    setExpenses(formattedExpenses);
+  };
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await getCategory();
-
-        const response = res.filter(
-          (category) => category.category_type === "expense"
-        );
-        setCategories(response);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    const fetchExpenses = async () => {
-      const response = await getExpenses();
-
-      const formattedExpenses = response.map((expense) => {
-        const date = new Date(expense.date);
-        const formattedDate = date.toISOString().split("T")[0];
-        // const categoryName=categories.filter((category)=>category.id === expense.category)
-
-        return { ...expense, date: formattedDate };
-      });
-
-      setExpenses(formattedExpenses);
-    };
     fetchCategories();
     fetchExpenses();
   }, []);
@@ -64,14 +64,25 @@ const Expense = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(name,value);
-    
-    setFormData({ ...formData, [name]: value }); 
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleFormSubmit = async () => {  
-    console.log(formData);
-    
+  const handleFormSubmit = async () => {
+    const selectedCategory = categories.find(
+      (category) => category.id === parseInt(formData.category)
+    );
+
+    const updatedExpense = {
+      ...selectedExpense,
+      ...formData,
+      category_name: selectedCategory
+        ? selectedCategory.name
+        : selectedExpense.category_name, 
+    };
+    const updatedExpenses = expenses.map((expense) =>
+      expense.id === selectedExpense.id ? updatedExpense : expense
+    );
+    setExpenses(updatedExpenses);
     await editExpense(selectedExpense.id, formData);
     closeModal();
   };
@@ -148,7 +159,7 @@ const Expense = () => {
                     </label>
                     <select
                       name="category"
-                      value={formData.category_id} // Use category.id
+                      value={formData.category || ""} // Use category_id
                       onChange={handleInputChange}
                       className="w-full border rounded p-2"
                     >
