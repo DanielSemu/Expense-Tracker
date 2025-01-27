@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FiEye, FiEdit } from "react-icons/fi";
-import { getBudgets } from '../../services/budgetServices'
+import { editBudget, getBudgets } from '../../services/budgetServices'
 import ReusableTable from '../ui/ReusableTable';
 import { getCategory } from '../../services/categoryServices';
 
@@ -9,7 +9,12 @@ const Budget = () => {
   const [modalOpen, setModalOpen]=useState(false)
   const [isEditing, setIsEditing]=useState(false)
   const [selectedBudget, setSelectedBudget]=useState([])
-  const [formData, setFormData]=useState({})
+   const [formData, setFormData] = useState({
+      limit: "",
+      category_id: "",
+      start_date: "",
+      end_date: "",
+    });
   const [categories, setCategories]=useState([])
 
 
@@ -17,8 +22,10 @@ const Budget = () => {
 const openEditModal =(row)=>{
     setModalOpen(true)
     setIsEditing(true)
-    setSelectedBudget()
+    setSelectedBudget(row)
     setFormData(row)
+    console.log(row);
+    
   }
 
   const openDetailModal =(row)=>{
@@ -34,15 +41,31 @@ const openEditModal =(row)=>{
     setFormData({});
   }
   const handleInputChange =(e)=>{
-
     const {name, value}=e.target
     setFormData({...formData, [name]:value})
   }
 
-  const handleFormSubmit = async ()=>{
-    console.log(formData);
-    
-  }
+  const handleFormSubmit = async () => {
+    const formattedFormData={...formData,category:parseInt(formData.category_id)}
+    console.log(formattedFormData);
+    // const updatedBudget = {
+    //   ...selectedBudget,
+    //   ...formData,
+    //   category_name: selectedBudget
+    //     ? selectedBudget.name
+    //     : selectedBudget.category_name, 
+    // };
+  // console.log(updatedBudget);
+
+  //   const updatedBudgets = budgets.map((budget) =>
+  //     budget.id === selectedBudget.id ? updatedBudget : budget
+  //   );
+  //   setBudgets(updatedBudgets);
+
+    await editBudget(selectedBudget.id, formattedFormData);
+    closeModal();
+  };
+
   useEffect(() => {
       const fetchBudgets = async () => {
         try {
@@ -56,17 +79,22 @@ const openEditModal =(row)=>{
 
             return { ...budget, start_date:formattedStartDate, end_date:formattedEndDate}
           })
-          console.log(formattedDate);
-
           setBudgets(formattedDate)
         } catch (error) {
           console.error('Failed to fetch categories:', error);
         }
       };
-      const fetchCategories =async ()=>{
-        const response= await getCategory()
-        setCategories(response)
-      }
+       const fetchCategories = async () => {
+          try {
+            const res = await getCategory();
+            const response = res.filter(
+              (category) => category.category_type === "expense"
+            );
+            setCategories(response);
+          } catch (error) {
+            console.error("Error fetching categories:", error);
+          }
+        };
 
       fetchCategories()
       fetchBudgets();
@@ -144,8 +172,8 @@ const openEditModal =(row)=>{
                       Category
                     </label>
                     <select
-                      name="category"
-                      value={formData.category || ""} // Use category_id
+                      name="category_id"
+                      value={formData.category_id || ""} // Use category_id
                       onChange={handleInputChange}
                       className="w-full border rounded p-2"
                     >

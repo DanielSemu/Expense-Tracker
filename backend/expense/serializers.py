@@ -33,10 +33,11 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 class BudgetSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
-    category_id = serializers.IntegerField(source="category.id", read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), source="category")
+
     class Meta:
         model = Budget
-        fields = ['id', 'user','category_id','category_name', 'limit', 'start_date', 'end_date']
+        fields = ['id', 'user', 'category_id', 'category_name', 'limit', 'start_date', 'end_date']
         read_only_fields = ['user']
 
 

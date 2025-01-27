@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getCategory } from "../../services/categoryServices";
-import { addExpense } from "../../services/expenseServices";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import { addBudget } from "../../services/budgetServices";
 
 const AddBudget = () => {
   const [categories, setCategories] = useState(null);
@@ -12,6 +12,7 @@ const AddBudget = () => {
     end_date: "",
   });
   const [error, setError] = useState("");
+  const today = new Date().toISOString().split("T")[0];
 
   const fetchCategories = async () => {
     try {
@@ -41,30 +42,34 @@ const AddBudget = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("formdata", formData);
-    if (!formData.expense || !formData.category || !formData.amount) {
+    if (!formData.limit || !formData.category ) {
       setError("All fields are required.");
       return;
     }
-    if (isNaN(formData.amount) || formData.amount <= 0) {
-      setError("Amount must be a positive number.");
+    if (isNaN(formData.limit) || formData.limit <= 0) {
+      setError("Budget Limit must be a positive number.");
       return;
     }
     setError("");
-    const expenseData = {
-      expense: formData.expense,
-      category: formData.category,
-      amount: parseFloat(formData.amount),
+    const budgetData = {
+      limit: formData.limit,
+      category_id: parseInt(formData.category),
+      start_date: formData.start_date,
+      end_date:formData.end_date,
     };
+    // console.log(budgetData);
+    
     try {
-      await addExpense(expenseData);
+      await addBudget(budgetData);
       showSuccessToast("Successfully Added");
     } catch (error) {
       showErrorToast(error);
     }
     setFormData({
-      expense: "",
+      limit: "",
       category: "",
-      amount: "",
+      start_date: "",
+      end_date: "",
     });
   };
 
@@ -77,18 +82,18 @@ const AddBudget = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="mb-5">
             <label
-              htmlFor="expense"
+              htmlFor="limit"
               className="block mb-2 text-sm font-medium text-gray-900 "
             >
               Budget Limit
             </label>
             <input
-              type="text"
-              id="expense"
-              value={formData.expense}
+              type="number"
+              id="limit"
+              value={formData.limit}
               onChange={handleInputChange}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="expense..."
+              placeholder="budget limit..."
               required
             />
           </div>
@@ -128,6 +133,7 @@ const AddBudget = () => {
               type="date"
               id="start_date"
               value={formData.start_date}
+              min={today}
               onChange={handleInputChange}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
@@ -144,6 +150,7 @@ const AddBudget = () => {
               type="date"
               id="end_date"
               value={formData.end_date}
+              min={today}
               onChange={handleInputChange}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
@@ -155,7 +162,7 @@ const AddBudget = () => {
           type="submit"
           className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
         >
-          Add Expense
+          Add Budget
         </button>
       </form>
     </div>

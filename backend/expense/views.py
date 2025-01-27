@@ -162,6 +162,7 @@ class BudgetView(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = BudgetSerializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
